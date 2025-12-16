@@ -370,14 +370,14 @@
         // *** CONFIGURAÇÃO DO FIREBASE ***
         // IMPORTANTE: VOCÊ DEVE SUBSTITUIR ESTAS CHAVES PELAS SUAS!
         const firebaseConfig = {
-  apiKey: "AIzaSyBv62mYzTKqCTqo-Kfw5ds-GEk67L7_8-I",
-  authDomain: "sdfc-c1b59.firebaseapp.com",
-  projectId: "sdfc-c1b59",
-  storageBucket: "sdfc-c1b59.firebasestorage.app",
-  messagingSenderId: "799347293922",
-  appId: "1:799347293922:web:df6a9a6f76fcf2bbc9e8bb",
-  measurementId: "G-J91HPQWH8F"
-};
+            apiKey: "AIzaSyBv62mYzTKqCTqo-Kfw5ds-GEk67L7_8-I",
+            authDomain: "sdfc-c1b59.firebaseapp.com",
+            projectId: "sdfc-c1b59",
+            storageBucket: "sdfc-c1b59.firebasestorage.app",
+            messagingSenderId: "799347293922",
+            appId: "1:799347293922:web:df6a9a6f76fcf2bbc9e8bb",
+            measurementId: "G-J91HPQWH8F"
+        };
 
         // Inicializa o Firebase
         let database = null;
@@ -388,7 +388,7 @@
         } catch (error) {
             console.error("ERRO ao inicializar o Firebase. Configure as chaves:", error);
             document.addEventListener('DOMContentLoaded', () => {
-                alert("AVISO: Falha na conexão com o Firebase. O chat e a sincronização não funcionarão. Por favor, configure as chaves.");
+                alert("AVISO: Falha na conexão com o Firebase. O chat e a sincronização podem não funcionar. Por favor, configure as chaves.");
             });
         }
     </script>
@@ -450,7 +450,9 @@
             </form>
         </div>
 
-    </div> <div id="theme-popup" class="modal hidden">
+    </div> 
+    
+    <div id="theme-popup" class="modal hidden">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
             <h3>Configurações de Tema ⚙️</h3>
@@ -521,10 +523,11 @@
             console.log("YouTube Player API Ready.");
             
             if (playlist.length > 0 && currentVideoIndex !== -1) {
+                // A sincronização de vídeo começa aqui, mas o chat inicia no DOMContentLoaded.
                 loadAndPlayVideo(currentVideoIndex, false); 
             }
-            // CRÍTICO: Inicia a escuta do Firebase APÓS o player do YouTube estar pronto
-            setupFirebaseListeners(); 
+            // *** IMPORTANTE: REMOVIDO DAQUI ***
+            // setupFirebaseListeners(); 
         }
 
         function onPlayerStateChange(event) {
@@ -765,17 +768,25 @@
                 isSyncing = false; // Desativa flag
             };
 
+            // *** FUNÇÃO DE CONFIGURAÇÃO DE LISTENERS (AGORA SÓ VERIFICA A VARIÁVEL GLOBAL) ***
             const setupFirebaseListeners = () => {
-                if (SYNC_STATE) {
+                if (!database) return; // Garante que database foi inicializado
+
+                // Listener da Sincronização de Vídeo (Depende do SYNC_STATE existir)
+                if (SYNC_STATE) { 
                     SYNC_STATE.on('value', (snapshot) => {
                         const remoteState = snapshot.val();
                         if (remoteState) {
-                            applyRemoteState(remoteState);
+                            // Aplicar estado remoto, mas SÓ se a API do YT estiver carregada 
+                            // (a sincronização não funciona sem ela)
+                            if (isYouTubeAPILoaded) {
+                                applyRemoteState(remoteState);
+                            }
                         }
                     });
                 }
                 
-                // Listener do Chat
+                // Listener do Chat (INDEPENDENTE do YouTube Player)
                 if (CHAT_MESSAGES) {
                     CHAT_MESSAGES.limitToLast(50).on('child_added', (snapshot) => {
                         const message = snapshot.val();
@@ -836,7 +847,6 @@
                 senderSpan.classList.add('message-sender');
                 
                 // Cria um nó de texto simples para o conteúdo da mensagem
-                // IMPORTANTE: Adiciona um espaço para separar o nome do texto (se necessário)
                 const textNode = document.createTextNode(text); 
                 
                 // Lógica de quem enviou (Minha mensagem vs. Outra mensagem)
@@ -1149,6 +1159,15 @@
                 }
             }, 30 * 60 * 1000); 
             
+            // *** CRÍTICO: CHAMA O SETUP DO FIREBASE AQUI ***
+            // Garante que o chat comece a escutar o banco de dados assim que o DOM estiver pronto,
+            // independentemente do player de vídeo.
+            if (database) {
+                setupFirebaseListeners(); 
+            } else {
+                console.warn("Firebase database não inicializado. O chat pode não funcionar.");
+            }
+
             // Inicialização final
             initializeTheme();
             setupColorSelectors();
@@ -1162,3 +1181,4 @@
     </script>
 </body>
 </html>
+
