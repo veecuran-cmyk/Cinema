@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎬 Cinema ♥️</title>
+    <title>🎬 Cinema Sincronizado Flex 💖 (Firebase)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <style>
@@ -54,24 +54,24 @@
             min-height: 100vh;
         }
 
-        /* NOVO: LAYOUT PRINCIPAL (VIDEO + CHAT) */
+        /* LAYOUT PRINCIPAL (VIDEO + CHAT) */
         #main-content {
             display: flex;
             width: 100%;
-            max-width: 1300px; /* Aumentado para acomodar o chat */
+            max-width: 1300px;
             gap: 20px;
             margin-bottom: 20px;
         }
 
         #video-chat-area {
-            flex: 2; /* Ocupa 2/3 da largura */
+            flex: 2;
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
         
         #chat-container {
-            flex: 1; /* Ocupa 1/3 da largura */
+            flex: 1;
             background-color: var(--card-background);
             border: 1px solid var(--border-color);
             border-radius: 8px;
@@ -85,7 +85,7 @@
         
         @media (max-width: 1000px) {
             #main-content {
-                flex-direction: column; /* Chat fica abaixo do vídeo em telas menores */
+                flex-direction: column;
             }
             #chat-container {
                 min-height: 300px;
@@ -109,7 +109,7 @@
             color: var(--primary-color);
         }
 
-        /* PLAYER E CONTROLES (Mantidos e adaptados) */
+        /* PLAYER E CONTROLES */
         #video-container {
             width: 100%;
             max-width: 900px; 
@@ -160,7 +160,7 @@
             margin-bottom: 20px;
         }
 
-        /* ESTILO GLOBAL DE BOTÕES (Mantidos) */
+        /* ESTILO GLOBAL DE BOTÕES */
         button {
             padding: 10px 15px;
             border: none;
@@ -189,7 +189,7 @@
             background-color: #dc3545;
         }
 
-        /* PLAYLIST CONTAINER (Mantido) */
+        /* PLAYLIST CONTAINER */
         #playlist-container {
             width: 100%;
             max-width: 900px;
@@ -236,7 +236,7 @@
             color: white;
         }
 
-        /* INPUTS E FORMULÁRIOS (Mantidos e adaptados) */
+        /* INPUTS E FORMULÁRIOS */
         input[type="text"] {
             width: calc(100% - 22px);
             padding: 10px;
@@ -266,7 +266,7 @@
             display: none;
         }
 
-        /* NOVO: ESTILOS DO CHAT */
+        /* ESTILOS DO CHAT */
         #messages {
             flex-grow: 1;
             overflow-y: auto;
@@ -277,7 +277,7 @@
             background-color: var(--chat-bg);
             color: var(--chat-text);
             display: flex;
-            flex-direction: column; /* Mensagens de cima para baixo */
+            flex-direction: column;
         }
         .message {
             margin-bottom: 8px;
@@ -285,7 +285,7 @@
             border-radius: 5px;
             line-height: 1.4;
             max-width: 85%;
-            word-wrap: break-word; /* Quebra texto longo */
+            word-wrap: break-word;
         }
         .my-message {
             background-color: var(--primary-color);
@@ -319,7 +319,7 @@
             white-space: nowrap;
         }
         
-        /* Modal (Mantido) */
+        /* Modal */
         .modal {
             position: fixed;
             z-index: 10000;
@@ -370,7 +370,7 @@
         // *** CONFIGURAÇÃO DO FIREBASE ***
         // IMPORTANTE: VOCÊ DEVE SUBSTITUIR ESTAS CHAVES PELAS SUAS!
         const firebaseConfig = {
-            apiKey: "AIzaSyBv62mYzTKqCTqo-Kfw5ds-GEk67L7_8-I",
+            apiKey: "AIzaSyBv62mYzTKqCTqo-Kfw5ds-GEk67L7_8-I", 
             authDomain: "sdfc-c1b59.firebaseapp.com",
             projectId: "sdfc-c1b59",
             storageBucket: "sdfc-c1b59.firebasestorage.app",
@@ -439,7 +439,7 @@
         </div>
 
         <div id="chat-container">
-            <h3>❤️ Chat❤️</h3>
+            <h3>❤️ Chat de Cinema ❤️</h3>
             <div id="messages">
                 </div>
             <form id="message-form">
@@ -522,16 +522,16 @@
             isYouTubeAPILoaded = true;
             console.log("YouTube Player API Ready.");
             
+            // O carregamento inicial do vídeo agora é feito no listener do SYNC_STATE, 
+            // que aguarda o carregamento da playlist.
             if (playlist.length > 0 && currentVideoIndex !== -1) {
-                // A sincronização de vídeo começa aqui, mas o chat inicia no DOMContentLoaded.
+                // Tenta carregar o vídeo atual no índice, mas sem autoPlay
                 loadAndPlayVideo(currentVideoIndex, false); 
             }
-            // *** IMPORTANTE: REMOVIDO DAQUI ***
-            // setupFirebaseListeners(); 
         }
 
         function onPlayerStateChange(event) {
-            if (isSyncing) return; // Ignora se o estado foi mudado por sincronização
+            if (isSyncing) return; 
             
             const playerState = event.data;
             const currentVideo = playlist[currentVideoIndex];
@@ -545,7 +545,7 @@
                 } else if (playerState === YT.PlayerState.ENDED) {
                     // Vídeo do YouTube terminou, avança para o próximo
                     if (currentVideoIndex < playlist.length - 1) {
-                        loadAndPlayVideo(currentVideoIndex + 1);
+                        loadAndPlayVideo(currentVideoIndex + 1); // Dispara a publicação do novo índice
                     } else {
                         publishPlayerState('pause', youtubePlayer.getCurrentTime(), currentVideoIndex);
                     }
@@ -555,7 +555,7 @@
 
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Referências
+            // Referências do DOM (Mantidas)
             const localVideoPlayer = document.getElementById('local-video-player');
             const youtubePlayerDiv = document.getElementById('youtube-player');
             const fullscreenBtn = document.getElementById('fullscreen-btn');
@@ -573,38 +573,33 @@
             const submitAddVideoBtn = document.getElementById('submit-add-video-btn');
             const videoUrlInput = document.getElementById('video-url-input');
             const videoTitleInput = document.getElementById('video-title-input');
-            
-            // NOVO: Referências de Sincronização e Chat
             const usernameInput = document.getElementById('username-input');
             const toggleSyncBtn = document.getElementById('toggle-sync-btn');
             const messagesDiv = document.getElementById('messages');
             const messageForm = document.getElementById('message-form');
             const messageInput = document.getElementById('message-input');
             
-            // Variáveis de Tema/Playlist (Mantidas)
-            let playlist = JSON.parse(localStorage.getItem('videoPlaylist')) || [
-                { title: "Exemplo Local (MP4)", url: "https://www.w3schools.com/html/mov_bbb.mp4" },
-                { title: "Exemplo YouTube", url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }, 
-            ];
-            let currentVideoIndex = parseInt(localStorage.getItem('currentVideoIndex')) || 0;
+            // Variáveis de Tema/Playlist
+            // Playlist e índice serão carregados APENAS do Firebase.
+            let playlist = []; // A playlist agora é controlada pelo Firebase.
+            let currentVideoIndex = -1; // Começa sem vídeo ativo.
             let currentThemeColorClass = localStorage.getItem('themeColor') || 'rainbow-violet'; 
             let currentThemeMode = localStorage.getItem('themeMode') || 'auto';
             
             // Variáveis do Firebase
             const FIREBASE_SYNC_PATH = 'videoSyncState';
             const FIREBASE_CHAT_PATH = 'chatMessages';
+            const FIREBASE_PLAYLIST_PATH = 'globalPlaylist'; // NOVO: Caminho para a playlist global
+
             const SYNC_STATE = database ? database.ref(FIREBASE_SYNC_PATH) : null;
             const CHAT_MESSAGES = database ? database.ref(FIREBASE_CHAT_PATH) : null;
-            
+            const GLOBAL_PLAYLIST = database ? database.ref(FIREBASE_PLAYLIST_PATH) : null; // NOVO: Referência ao nó da playlist
+
             // --- Funções Auxiliares (Mantidas) ---
             const getYouTubeId = (url) => {
                 const regex = /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/;
                 const match = url.match(regex);
                 return match ? match[1] : null;
-            };
-            const savePlaylist = () => {
-                localStorage.setItem('videoPlaylist', JSON.stringify(playlist));
-                localStorage.setItem('currentVideoIndex', currentVideoIndex);
             };
             const rainbowColors = [
                 { name: "Vermelho", class: "rainbow-red", hex: "#FF4136" },
@@ -618,59 +613,74 @@
 
             // --- Lógica de Player (Adaptada para Sincronização) ---
             const loadAndPlayVideo = (index, autoPlay = true, isRemote = false) => {
-                if (index >= 0 && index < playlist.length) {
-                    currentVideoIndex = index;
-                    savePlaylist();
+                if (index < 0 || index >= playlist.length) {
+                    // Limpar player se o índice for inválido
+                    localVideoPlayer.classList.add('hidden-player');
+                    youtubePlayerDiv.classList.add('hidden-player');
+                    localVideoPlayer.pause();
+                    localVideoPlayer.removeAttribute('src');
+                    if (isYouTubeAPILoaded) {
+                        youtubePlayer.stopVideo();
+                    }
+                    if (isSyncActive && !isRemote) {
+                        // Publica índice -1 para indicar "nenhum vídeo"
+                        publishPlayerState('pause', 0, -1); 
+                    }
+                    updatePlaylistUI();
+                    return;
+                }
+                
+                // MANTÉM a variável local atualizada para o player UI/Listeners
+                currentVideoIndex = index;
+                
+                const item = playlist[currentVideoIndex];
+                const youtubeId = getYouTubeId(item.url);
+
+                if (youtubeId) {
+                    localVideoPlayer.classList.add('hidden-player');
+                    youtubePlayerDiv.classList.remove('hidden-player');
                     
-                    const item = playlist[currentVideoIndex];
-                    const youtubeId = getYouTubeId(item.url);
-
-                    if (youtubeId) {
-                        localVideoPlayer.classList.add('hidden-player');
-                        youtubePlayerDiv.classList.remove('hidden-player');
+                    if (isYouTubeAPILoaded) {
+                        localVideoPlayer.pause();
+                        localVideoPlayer.removeAttribute('src'); 
                         
-                        if (isYouTubeAPILoaded) {
-                            localVideoPlayer.pause();
-                            localVideoPlayer.removeAttribute('src'); 
-                            
-                            youtubePlayer.loadVideoById(youtubeId);
-                            if (autoPlay) {
-                                youtubePlayer.playVideo(); 
-                            } else {
-                                youtubePlayer.stopVideo(); 
-                            }
-                            // Publica o novo índice (apenas se for uma ação local ou se a sincronização estiver ativa)
-                            if (!isRemote && isSyncActive) {
-                                publishPlayerState(autoPlay ? 'play' : 'pause', 0, currentVideoIndex);
-                            }
-                        }
-
-                    } else {
-                        youtubePlayerDiv.classList.add('hidden-player');
-                        localVideoPlayer.classList.remove('hidden-player');
-
-                        if (isYouTubeAPILoaded) {
+                        youtubePlayer.loadVideoById(youtubeId);
+                        if (autoPlay) {
+                            youtubePlayer.playVideo(); 
+                        } else {
                             youtubePlayer.stopVideo(); 
                         }
-                        
-                        localVideoPlayer.src = item.url;
-                        localVideoPlayer.load();
-
-                        if (autoPlay) {
-                            localVideoPlayer.play().catch(error => {
-                                console.error("Erro ao tentar reproduzir o vídeo local automaticamente:", error);
-                            });
-                        }
-                        // Publica o novo índice (apenas se for uma ação local ou se a sincronização estiver ativa)
+                        // Publica o novo índice e estado (apenas se for uma ação local)
                         if (!isRemote && isSyncActive) {
                             publishPlayerState(autoPlay ? 'play' : 'pause', 0, currentVideoIndex);
                         }
                     }
-                    updatePlaylistUI();
+
+                } else {
+                    youtubePlayerDiv.classList.add('hidden-player');
+                    localVideoPlayer.classList.remove('hidden-player');
+
+                    if (isYouTubeAPILoaded) {
+                        youtubePlayer.stopVideo(); 
+                    }
+                    
+                    localVideoPlayer.src = item.url;
+                    localVideoPlayer.load();
+
+                    if (autoPlay) {
+                        localVideoPlayer.play().catch(error => {
+                            console.error("Erro ao tentar reproduzir o vídeo local automaticamente:", error);
+                        });
+                    }
+                    // Publica o novo índice e estado (apenas se for uma ação local)
+                    if (!isRemote && isSyncActive) {
+                        publishPlayerState(autoPlay ? 'play' : 'pause', 0, currentVideoIndex);
+                    }
                 }
+                updatePlaylistUI();
             };
             
-            // Listeners de Play/Pause/Seek do Player Local
+            // Listeners de Play/Pause/Seek do Player Local (Mantidos)
             localVideoPlayer.addEventListener('play', () => {
                 if (isSyncing || !isSyncActive) return;
                 publishPlayerState('play', localVideoPlayer.currentTime, currentVideoIndex);
@@ -685,14 +695,12 @@
                     return;
                 }
                 if (isSyncing || !isSyncActive) return;
-                // Publica o novo tempo e o estado atual (play/pause)
                 publishPlayerState(localVideoPlayer.paused ? 'pause' : 'play', localVideoPlayer.currentTime, currentVideoIndex);
             });
             localVideoPlayer.addEventListener('ended', () => {
                 if (currentVideoIndex < playlist.length - 1) {
                     loadAndPlayVideo(currentVideoIndex + 1);
                 } else {
-                    localVideoPlayer.pause();
                     publishPlayerState('pause', localVideoPlayer.currentTime, currentVideoIndex);
                 }
             });
@@ -701,11 +709,13 @@
             
             const publishPlayerState = (state, time, index) => {
                 if (!isSyncActive || !SYNC_STATE) return;
+                // Garante que o índice enviado é válido (caso a playlist esteja vazia)
+                const safeIndex = index !== undefined && index !== null ? index : -1;
 
                 const data = {
-                    state: state, // 'play', 'pause', 'load'
+                    state: state, 
                     time: time,
-                    index: index,
+                    index: safeIndex, // Envia o índice ativo
                     timestamp: firebase.database.ServerValue.TIMESTAMP 
                 };
 
@@ -715,26 +725,35 @@
             };
 
             const applyRemoteState = (remoteState) => {
-                if (!remoteState || !isSyncActive || !isYouTubeAPILoaded) return;
+                if (!remoteState || !isSyncActive || !isYouTubeAPILoaded || playlist.length === 0) return;
                 
                 const currentTime = Date.now();
-                // Ignora estados muito antigos
                 if (remoteState.timestamp < currentTime - 10000) { return; } 
 
-                isSyncing = true; // Ativa flag
+                isSyncing = true; 
 
                 const remoteIndex = remoteState.index;
                 const remoteTime = remoteState.time;
                 const remoteStateAction = remoteState.state;
-                const currentVideo = playlist[remoteIndex];
+                
+                // CRÍTICO: Atualiza o índice local ANTES de carregar o vídeo, 
+                // garantindo que 'playlist[currentVideoIndex]' aponte para o item correto.
+                currentVideoIndex = remoteIndex; 
+                const currentVideo = playlist[currentVideoIndex];
                 const isYouTube = currentVideo && getYouTubeId(currentVideo.url);
                 
-                // 1. Mudar o vídeo se o índice for diferente
-                if (remoteIndex !== currentVideoIndex) {
-                    // O `loadAndPlayVideo` no modo isRemote=true não publica para o Firebase
+                // 1. Mudar o vídeo se o índice for diferente (ou se o vídeo atual for inválido)
+                if (remoteIndex !== currentVideoIndex || currentVideoIndex < 0) {
+                    // isRemote=true: Não publica o novo índice de volta ao Firebase.
                     loadAndPlayVideo(remoteIndex, false, true); 
                 }
 
+                // Se não houver vídeo na playlist, apenas pausa.
+                if (currentVideoIndex === -1 || !currentVideo) {
+                    isSyncing = false;
+                    return;
+                }
+                
                 // 2. Aplicar estado e tempo (seek)
                 if (isYouTube) {
                     const localTime = youtubePlayer.getCurrentTime();
@@ -765,21 +784,109 @@
                     }
                 }
 
-                isSyncing = false; // Desativa flag
+                isSyncing = false; 
+                updatePlaylistUI(); // Atualiza a UI para refletir o índice ativo
             };
 
-            // *** FUNÇÃO DE CONFIGURAÇÃO DE LISTENERS (AGORA SÓ VERIFICA A VARIÁVEL GLOBAL) ***
-            const setupFirebaseListeners = () => {
-                if (!database) return; // Garante que database foi inicializado
+            // --- Lógica da Playlist Global Firebase (NOVA) ---
 
-                // Listener da Sincronização de Vídeo (Depende do SYNC_STATE existir)
+            const updateGlobalPlaylist = (newPlaylist) => {
+                if (!GLOBAL_PLAYLIST) return;
+                
+                // Publica a playlist completa (usa null se vazia)
+                const data = newPlaylist.length > 0 ? newPlaylist : null;
+                GLOBAL_PLAYLIST.set(data).catch(error => {
+                    console.error("Erro ao publicar a playlist:", error);
+                });
+                // A variável local 'playlist' será atualizada pelo listener do Firebase (abaixo)
+                // A UI será atualizada no listener também.
+            };
+
+            const addVideoToPlaylist = (url, title) => {
+                if (!url) return;
+
+                const videoTitle = title || `Vídeo ${playlist.length + 1}`;
+                
+                // Cria uma nova playlist com o item
+                const newPlaylist = [...playlist, { title: videoTitle, url: url }];
+                
+                updateGlobalPlaylist(newPlaylist);
+                
+                // Se for o primeiro vídeo, inicia a reprodução e publica o índice 0
+                if (playlist.length === 0) { 
+                    loadAndPlayVideo(0, true); 
+                }
+            };
+            
+            const moveVideo = (oldIndex, direction) => {
+                const newIndex = oldIndex + direction;
+                if (newIndex >= 0 && newIndex < playlist.length) {
+                    const newPlaylist = [...playlist];
+                    [newPlaylist[oldIndex], newPlaylist[newIndex]] = [newPlaylist[newIndex], newPlaylist[oldIndex]];
+                    
+                    updateGlobalPlaylist(newPlaylist); 
+                    
+                    // Publica a mudança de índice ativo para todos, se necessário
+                    if (isSyncActive) {
+                        if (currentVideoIndex === oldIndex) {
+                             publishPlayerState('load', 0, newIndex); // O vídeo ativo se moveu
+                        } else if (currentVideoIndex === newIndex) {
+                             publishPlayerState('load', 0, oldIndex); // O vídeo alvo se moveu
+                        }
+                    }
+                }
+            };
+
+            const deleteVideo = (index) => {
+                if (confirm(`Tem certeza que deseja remover "${playlist[index].title}"?`)) {
+                    const newPlaylist = playlist.filter((_, i) => i !== index);
+                    
+                    updateGlobalPlaylist(newPlaylist);
+
+                    if (currentVideoIndex === index) {
+                        // Se o vídeo ativo foi removido, tenta ir para o próximo ou -1 (nenhum)
+                        const newActiveIndex = newPlaylist.length > 0 ? Math.min(index, newPlaylist.length - 1) : -1;
+                        loadAndPlayVideo(newActiveIndex, false);
+                    } else if (currentVideoIndex > index) {
+                        // Se o vídeo ativo estava após o excluído, publica o índice decrementado
+                        if (isSyncActive) {
+                            publishPlayerState('load', 0, currentVideoIndex - 1);
+                        }
+                    }
+                }
+            };
+
+            // --- Configuração de Listeners (CRÍTICO para o Chat e Playlist) ---
+            const setupFirebaseListeners = () => {
+                if (!database) return; 
+
+                // Listener da Playlist Global
+                if (GLOBAL_PLAYLIST) {
+                    GLOBAL_PLAYLIST.on('value', (snapshot) => {
+                        const remotePlaylist = snapshot.val();
+                        // Trata o caso de playlist vazia (Firebase envia null)
+                        playlist = remotePlaylist || []; 
+                        
+                        // Redesenha a lista
+                        updatePlaylistUI(); 
+                        
+                        // Se o player estiver pronto e não houver vídeo ativo, tenta carregar o primeiro
+                        if (isYouTubeAPILoaded && currentVideoIndex === -1 && playlist.length > 0) {
+                             loadAndPlayVideo(0, false);
+                        }
+                    });
+                }
+                
+                // Listener da Sincronização de Vídeo
                 if (SYNC_STATE) { 
                     SYNC_STATE.on('value', (snapshot) => {
                         const remoteState = snapshot.val();
                         if (remoteState) {
-                            // Aplicar estado remoto, mas SÓ se a API do YT estiver carregada 
-                            // (a sincronização não funciona sem ela)
-                            if (isYouTubeAPILoaded) {
+                            // Atualiza o índice local, mesmo que o applyRemoteState não seja chamado ainda
+                            currentVideoIndex = remoteState.index !== undefined ? remoteState.index : -1; 
+                            
+                            // Aplica o estado remoto APENAS se o YT API estiver carregado E a playlist não estiver vazia
+                            if (isYouTubeAPILoaded && playlist.length > 0) {
                                 applyRemoteState(remoteState);
                             }
                         }
@@ -795,7 +902,7 @@
                 }
             };
             
-            // Sincronização periódica do tempo do YouTube (Play/Pause já é instantâneo)
+            // Sincronização periódica do tempo do YouTube (Mantida)
             let syncInterval = null;
             const startSyncInterval = () => {
                 if (syncInterval) clearInterval(syncInterval);
@@ -805,14 +912,13 @@
                     const currentVideo = playlist[currentVideoIndex];
                     const isYouTube = currentVideo && getYouTubeId(currentVideo.url);
 
-                    // Se estivermos em um vídeo do YouTube e rodando, publica o tempo a cada 5s
                     if (isYouTube && youtubePlayer.getPlayerState() === YT.PlayerState.PLAYING) {
                         publishPlayerState('play', youtubePlayer.getCurrentTime(), currentVideoIndex);
                     }
-                }, 5000); // Sincroniza a cada 5 segundos
+                }, 5000); 
             };
             
-            // Toggle de Sincronização
+            // Toggle de Sincronização (Mantido, com ajuste de publicação)
             toggleSyncBtn.addEventListener('click', () => {
                 isSyncActive = !isSyncActive;
                 toggleSyncBtn.innerHTML = isSyncActive 
@@ -821,49 +927,44 @@
                 
                 if (isSyncActive) {
                     startSyncInterval();
-                    // Força a publicação do estado atual para sincronizar o outro player
+                    
+                    // Publica o estado atual para sincronizar o outro player
                     const currentVideo = playlist[currentVideoIndex];
                     const isYouTube = currentVideo && getYouTubeId(currentVideo.url);
-                    const state = (isYouTube ? youtubePlayer.getPlayerState() === YT.PlayerState.PLAYING : !localVideoPlayer.paused) ? 'play' : 'pause';
-                    const time = isYouTube ? youtubePlayer.getCurrentTime() : localVideoPlayer.currentTime;
+                    const state = (isYouTube ? (isYouTubeAPILoaded && youtubePlayer.getPlayerState() === YT.PlayerState.PLAYING) : !localVideoPlayer.paused) ? 'play' : 'pause';
+                    const time = isYouTube ? (isYouTubeAPILoaded ? youtubePlayer.getCurrentTime() : 0) : localVideoPlayer.currentTime;
                     publishPlayerState(state, time, currentVideoIndex);
                 } else {
                     if (syncInterval) clearInterval(syncInterval);
                 }
             });
 
-            // --- Lógica de Chat Firebase (CORRIGIDA) ---
+            // --- Lógica de Chat Firebase (Mantida) ---
             
             const displayMessage = (sender, text) => {
                 const messageDiv = document.createElement('div');
                 messageDiv.classList.add('message');
                 
-                // Pega o nome do usuário local e garante que não há espaços em branco
                 const localUsername = (usernameInput.value || 'Usuário Padrão').trim();
                 const cleanSender = sender.trim();
 
-                // Cria o elemento para o nome do remetente
                 const senderSpan = document.createElement('span');
                 senderSpan.classList.add('message-sender');
                 
-                // Cria um nó de texto simples para o conteúdo da mensagem
                 const textNode = document.createTextNode(text); 
                 
-                // Lógica de quem enviou (Minha mensagem vs. Outra mensagem)
                 if (cleanSender === localUsername) {
                     messageDiv.classList.add('my-message');
-                    senderSpan.textContent = 'Você'; // Exibe "Você" para o usuário local
+                    senderSpan.textContent = 'Você'; 
                 } else {
                     messageDiv.classList.add('other-message');
-                    senderSpan.textContent = cleanSender; // Exibe o nome do remetente remoto
+                    senderSpan.textContent = cleanSender; 
                 }
                 
-                // Adiciona o Span do Remetente e o Texto da Mensagem
                 messageDiv.appendChild(senderSpan);
                 messageDiv.appendChild(textNode);
                 
                 messagesDiv.appendChild(messageDiv);
-                // Rola para a mensagem mais recente
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
             };
 
@@ -873,7 +974,7 @@
                 const sender = usernameInput.value.trim() || 'Usuário Padrão';
                 
                 if (text && CHAT_MESSAGES) {
-                    CHAT_MESSAGES.push({
+                 CHAT_MESSAGES.push({
                         sender: sender,
                         text: text,
                         timestamp: firebase.database.ServerValue.TIMESTAMP
@@ -885,10 +986,14 @@
                 }
             });
             
-            // --- Playlist e UI (Mantida com ajustes de sincronização) ---
+            // --- Playlist e UI ---
 
             const updatePlaylistUI = () => {
                 playlistList.innerHTML = '';
+                if (playlist.length === 0) {
+                    playlistList.innerHTML = '<li>A playlist está vazia. Adicione um vídeo!</li>';
+                    return;
+                }
 
                 playlist.forEach((item, index) => {
                     const li = document.createElement('li');
@@ -896,7 +1001,6 @@
                     const titleSpan = document.createElement('span');
                     titleSpan.textContent = `${index + 1}. ${item.title}`;
                     titleSpan.classList.add('video-title');
-                    // NOVO: Ao clicar, chama loadAndPlayVideo com autoPlay=true (comportamento de play)
                     titleSpan.addEventListener('click', () => loadAndPlayVideo(index, true)); 
 
                     const actionsDiv = document.createElement('div');
@@ -909,10 +1013,6 @@
                     moveUpBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
                         moveVideo(index, -1);
-                        // Se o vídeo ativo foi movido, publica a mudança de índice
-                        if (currentVideoIndex === index - 1 && isSyncActive) { 
-                             publishPlayerState('load', 0, currentVideoIndex);
-                        }
                     });
 
                     const moveDownBtn = document.createElement('button');
@@ -923,10 +1023,6 @@
                     moveDownBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
                         moveVideo(index, 1);
-                        // Se o vídeo ativo foi movido, publica a mudança de índice
-                        if (currentVideoIndex === index + 1 && isSyncActive) { 
-                             publishPlayerState('load', 0, currentVideoIndex);
-                        }
                     });
 
                     const deleteBtn = document.createElement('button');
@@ -936,10 +1032,6 @@
                     deleteBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
                         deleteVideo(index);
-                        // Se o vídeo ativo foi excluído, publica a mudança de índice
-                        if (currentVideoIndex === index && isSyncActive) { 
-                            publishPlayerState('load', 0, currentVideoIndex);
-                        }
                     });
 
                     actionsDiv.appendChild(moveUpBtn);
@@ -949,6 +1041,7 @@
                     li.appendChild(titleSpan);
                     li.appendChild(actionsDiv);
 
+                    // Usa o índice global (atualizado pelo Firebase)
                     if (index === currentVideoIndex) {
                         li.classList.add('active-video');
                     }
@@ -957,61 +1050,6 @@
                 });
             };
 
-            const addVideoToPlaylist = (url, title) => {
-                if (!url) return;
-
-                const videoTitle = title || `Vídeo ${playlist.length + 1}`;
-                playlist.push({ title: videoTitle, url: url });
-                savePlaylist();
-                updatePlaylistUI();
-                
-                if (playlist.length === 1 || currentVideoIndex === -1) {
-                    loadAndPlayVideo(playlist.length - 1);
-                }
-            };
-            
-            const moveVideo = (oldIndex, direction) => {
-                const newIndex = oldIndex + direction;
-                if (newIndex >= 0 && newIndex < playlist.length) {
-                    [playlist[oldIndex], playlist[newIndex]] = [playlist[newIndex], playlist[oldIndex]];
-                    
-                    if (currentVideoIndex === oldIndex) {
-                        currentVideoIndex = newIndex;
-                    } else if (currentVideoIndex === newIndex) {
-                        currentVideoIndex = oldIndex;
-                    }
-                    
-                    savePlaylist();
-                    updatePlaylistUI();
-                }
-            };
-
-            const deleteVideo = (index) => {
-                if (confirm(`Tem certeza que deseja remover "${playlist[index].title}"?`)) {
-                    playlist.splice(index, 1);
-                    
-                    if (currentVideoIndex === index) {
-                        currentVideoIndex = 0;
-                       if (playlist.length > 0) {
-                            loadAndPlayVideo(currentVideoIndex, false);
-                        } else {
-                            localVideoPlayer.src = '';
-                            localVideoPlayer.classList.add('hidden-player');
-                            if (isYouTubeAPILoaded) {
-                                youtubePlayer.stopVideo();
-                                youtubePlayerDiv.classList.add('hidden-player');
-                            }
-                            currentVideoIndex = -1;
-                        }
-                    } else if (currentVideoIndex > index) {
-                        currentVideoIndex--;
-                    }
-                    
-                    savePlaylist();
-                    updatePlaylistUI();
-                }
-            };
-            
             // --- Funções de Tema/Modal/Fullscreen (Mantidas) ---
             
             const toggleFullscreen = () => {
@@ -1159,9 +1197,7 @@
                 }
             }, 30 * 60 * 1000); 
             
-            // *** CRÍTICO: CHAMA O SETUP DO FIREBASE AQUI ***
-            // Garante que o chat comece a escutar o banco de dados assim que o DOM estiver pronto,
-            // independentemente do player de vídeo.
+            // CRÍTICO: CHAMA O SETUP DO FIREBASE AQUI
             if (database) {
                 setupFirebaseListeners(); 
             } else {
@@ -1171,7 +1207,8 @@
             // Inicialização final
             initializeTheme();
             setupColorSelectors();
-            updatePlaylistUI();
+            // A UI da playlist é atualizada no listener do Firebase
+            // updatePlaylistUI(); 
 
             // Inicia o intervalo de sincronização (para o tempo do YouTube)
             if (isSyncActive) {
